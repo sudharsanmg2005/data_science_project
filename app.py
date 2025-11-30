@@ -3,10 +3,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import gradio as gr
-import os 
-# -----------------------------
+import os
+
+# -------------------------------------------------------
 # LOAD DATA
-# -----------------------------
+# -------------------------------------------------------
 df = pd.read_csv("seattle-weather.csv")
 
 # Keep only required columns
@@ -24,13 +25,13 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Create model
+# Build model
 model = RandomForestClassifier()
 model.fit(X_train, y_train)
 
-print("Model trained on local machine successfully!")
+print("Model trained successfully!")
 
-# Weather code mapping
+# Weather mapping
 weather_map = {
     0: "drizzle",
     1: "fog",
@@ -39,17 +40,17 @@ weather_map = {
     4: "sun"
 }
 
-# ---------------------------------
+# -------------------------------------------------------
 # PREDICTION FUNCTION
-# ---------------------------------
+# -------------------------------------------------------
 def predict_weather(temp_max, temp_min, wind):
     data = np.array([[temp_max, temp_min, wind]])
     pred = model.predict(data)[0]
     return f"Predicted Weather: {weather_map[pred]}"
 
-# ---------------------------------
+# -------------------------------------------------------
 # GRADIO UI
-# ---------------------------------
+# -------------------------------------------------------
 ui = gr.Interface(
     fn=predict_weather,
     inputs=[
@@ -58,16 +59,18 @@ ui = gr.Interface(
         gr.Number(label="Wind Speed (m/s)")
     ],
     outputs=gr.Textbox(label="Prediction"),
-    title="🌤 Local Weather Forecasting App",
-    description="Enter temperature and wind values to predict weather condition."
+    title="🌤 Weather Forecasting App",
+    description="Enter temperature and wind speed to predict weather condition."
 )
 
-ui.launch()
-
+# -------------------------------------------------------
+# RENDER DEPLOYMENT SETTINGS
+# -------------------------------------------------------
 port = int(os.environ.get("PORT", 7860))
 
 ui.launch(
     server_name="0.0.0.0",
     server_port=port,
-    share=False
+    share=False,
+    inbrowser=False  # VERY IMPORTANT FOR RENDER
 )
