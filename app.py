@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import gradio as gr
-
+import os 
 # -----------------------------
 # LOAD DATA
 # -----------------------------
@@ -63,3 +63,11 @@ ui = gr.Interface(
 )
 
 ui.launch()
+
+port = int(os.environ.get("PORT", 7860))
+
+ui.launch(
+    server_name="0.0.0.0",
+    server_port=port,
+    share=False
+)
